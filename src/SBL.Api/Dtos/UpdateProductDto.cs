@@ -1,0 +1,16 @@
+using SBL.Domain.Entities;
+
+namespace SBL.Api.Dtos;
+
+public class UpdateProductDto
+{
+    public int Id { get; set; }
+    
+    public string Name { get; set; }
+    
+    public List<Tag> Tags { get; set; }
+    
+    public string Description { get; set; }
+    
+    public decimal Price { get; set; }
+}
