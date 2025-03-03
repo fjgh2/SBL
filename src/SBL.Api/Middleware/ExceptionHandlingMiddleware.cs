@@ -32,7 +32,8 @@ public class ExceptionHandlerMiddleware
             var error = new
             {
                 Id = errorId,
-                ErrorMessage = "Hello, world!"
+                ErrorMessage = ex.Message,
+                StackTrace = ex.StackTrace
             };
 
             var requestPath = httpContext.Request.Path.ToString();

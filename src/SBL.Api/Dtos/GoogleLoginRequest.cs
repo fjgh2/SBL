@@ -1,4 +1,4 @@
-namespace SBL.Api.Controllers;
+namespace SBL.Api.Dtos;
 
 public class GoogleLoginRequest
 {
@@ -7,6 +7,4 @@ public class GoogleLoginRequest
     public string Email { get; set; }
     
     public string Name { get; set; }
-    
-    public string PictureUrl { get; set; }
 }

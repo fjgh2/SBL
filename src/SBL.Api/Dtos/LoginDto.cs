@@ -1,4 +1,4 @@
-namespace SBL.Api.Controllers;
+namespace SBL.Api.Dtos;
 
 public class LoginDto
 {

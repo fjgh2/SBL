@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SBL.Api.Dtos;
 using SBL.Domain.Entities;
 using SBL.Domain.Enums;
 using SBL.Services.Auth;
