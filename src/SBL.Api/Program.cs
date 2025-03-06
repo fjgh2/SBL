@@ -108,6 +108,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/static"
 });
 app.UseCors("AllowAllOrigins");
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -26,14 +26,13 @@ public class AuthController : ControllerBase
     [HttpPost("google-login")]
     public async Task<ActionResult<AuthResult>> GoogleLogin(GoogleLoginRequest request)
     {
-        if (request == null || string.IsNullOrEmpty(request.AccessToken) || 
-            string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Name))
+        if (request == null || string.IsNullOrEmpty(request.AccessToken))
         {
             return BadRequest(new ProblemDetails { Title = "Invalid request data" });
         }
 
         var result = await _authService.LoginAsync(request.AccessToken, request.Email, request.Name);
-        
+
         return Ok(result);
     }
 
@@ -55,7 +54,7 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> LogoutAsync(LogoutDto dto)
     {
         await _authService.LogoutAsync();
-        
+
         return Ok(new { message = "Logged out successfully" });
     }
 
