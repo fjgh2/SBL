@@ -70,7 +70,7 @@ builder.Services
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("AuthCustomer", policy => policy.RequireRole("AuthCustomer"));
+    options.AddPolicy("User", policy => policy.RequireRole("User"));
     options.AddPolicy("Moderator", policy => policy.RequireRole("Moderator"));
 });
 
@@ -88,21 +88,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<ExceptionHandlerMiddleware>();
+// app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-// Initialize database on its creation
-// using var scope = app.Services.CreateScope();
-// var services = scope.ServiceProvider;
-// var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-// try
-// {
-//     await DataSeeder.SeedAsync(services);
-//     await DataSeeder.SeedRolesAsync(roleManager);
-// }
-// catch (Exception ex)
-// {
-//     Debug.WriteLine(ex.Message, ex.StackTrace);
-// }
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    await DataSeeder.SeedAsync(services);
+}
+catch (Exception ex)
+{
+    Debug.WriteLine(ex.Message + "\n" + ex.StackTrace);
+}
 
 app.UseStaticFiles(new StaticFileOptions
 {

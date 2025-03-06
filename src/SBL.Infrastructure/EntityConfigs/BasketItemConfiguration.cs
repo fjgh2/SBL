@@ -10,11 +10,11 @@ public class BasketItemConfiguration : IEntityTypeConfiguration<BasketItem>
     {
         builder.HasKey(bi => bi.Id);
         
-        builder.HasOne(bi => bi.User)
-            .WithMany(u => u.BasketItems)
-            .HasForeignKey(bi => bi.UserId)
-            .IsRequired()
-            .OnDelete(DeleteBehavior.Cascade);
+        // builder.HasOne(bi => bi.User)
+        //     .WithMany(u => u.BasketItems)
+        //     .HasForeignKey(bi => bi.UserId)
+        //     .IsRequired()
+        //     .OnDelete(DeleteBehavior.Cascade);
         builder.HasOne(bi => bi.Product)
             .WithMany(s => s.BasketItems)
             .HasForeignKey(bi => bi.ProductId)

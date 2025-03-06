@@ -9,6 +9,11 @@ public class AchievementConfiguration : IEntityTypeConfiguration<Achievement>
     public void Configure(EntityTypeBuilder<Achievement> builder)
     {
         builder.HasKey(a => a.Id);
-        throw new NotImplementedException();
+
+        builder.Property(o => o.Name);
+        builder.Property(o => o.Description);
+        builder.Property(o => o.Picture);
+        builder.Property(u => u.CreatedAt)
+            .HasDefaultValueSql("CURRENT_TIMESTAMP");
     }
 }

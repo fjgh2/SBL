@@ -8,25 +8,29 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
 {
     public void Configure(EntityTypeBuilder<Product> builder)
     {
-        builder.HasKey(s => s.Id);
+        builder.HasKey(p => p.Id);
         
-        builder.HasMany(s => s.BasketItems)
+        builder.HasMany(p => p.BasketItems)
             .WithOne(bi => bi.Product)
             .HasForeignKey(bi => bi.ProductId)
             .OnDelete(DeleteBehavior.Cascade);
-        builder.HasMany(s => s.OrderItems)
+        builder.HasMany(p => p.OrderItems)
             .WithOne(oi => oi.Product)
             .HasForeignKey(oi => oi.ProductId)
             .OnDelete(DeleteBehavior.SetNull);
+        builder.HasMany(p => p.Feedbacks)
+            .WithOne(oi => oi.Product)
+            .HasForeignKey(oi => oi.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
-        builder.Property(s => s.Id);
-        builder.Property(s => s.Name)
+        builder.Property(p => p.Id);
+        builder.Property(p => p.Name)
             .IsRequired()
             .HasMaxLength(200);
-        builder.Property(s => s.Description)
+        builder.Property(p => p.Description)
             .IsRequired()
             .HasMaxLength(1000);
-        builder.Property(s => s.Price)
+        builder.Property(p => p.Price)
             .IsRequired();
     }
 }

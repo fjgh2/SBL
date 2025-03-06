@@ -9,6 +9,9 @@ public class UserAchievementConfiguration : IEntityTypeConfiguration<UserAchieve
     public void Configure(EntityTypeBuilder<UserAchievement> builder)
     {
         builder.HasKey(ua => new { ua.UserId, ua.AchievementId });
-        throw new NotImplementedException();
+
+        builder.Property(ua => ua.AchievementId);
+        builder.Property(ua => ua.UserId);
+        builder.Property(ua => ua.CreatedAt);
     }
 }

@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("google-login")]
-    public async Task<ActionResult<AuthResponse>> GoogleLogin(GoogleLoginRequest request)
+    public async Task<ActionResult<AuthResult>> GoogleLogin(GoogleLoginRequest request)
     {
         if (request == null || string.IsNullOrEmpty(request.AccessToken) || 
             string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Name))
@@ -50,7 +50,7 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "AuthCustomer,Admin")]
+    [Authorize(Roles = "User,Moderator,Admin")]
     [HttpPost("logout")]
     public async Task<ActionResult> LogoutAsync(LogoutDto dto)
     {

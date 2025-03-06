@@ -2,7 +2,7 @@ using SBL.Domain.Enums;
 
 namespace SBL.Services.Auth;
 
-public class AuthResponse
+public class AuthResult
 {
     public string Token { get; set; }
     

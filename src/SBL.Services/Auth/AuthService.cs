@@ -28,7 +28,7 @@ public class AuthService : IAuthService
         _tokenHelper = tokenHelper;
     }
 
-    public async Task<AuthResponse> LoginAsync(string accessToken, string email, string name)
+    public async Task<AuthResult> LoginAsync(string accessToken, string email, string name)
     {
         await GoogleJsonWebSignature.ValidateAsync(accessToken);
 
@@ -63,14 +63,14 @@ public class AuthService : IAuthService
 
         await _signInManager.SignInAsync(user, isPersistent: false);
 
-        return new AuthResponse
+        return new AuthResult
         {
             Token = token,
             Role = user.Role
         };
     }
 
-    public async Task<AuthResponse> LoginAsync(string email, string password)
+    public async Task<AuthResult> LoginAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
@@ -88,7 +88,7 @@ public class AuthService : IAuthService
         _sessionHelper.SetUserId(user.Id);
         _sessionHelper.SetUserRole(user.Role.ToString());
 
-        return new AuthResponse()
+        return new AuthResult()
         {
             Token = token,
             Role = user.Role

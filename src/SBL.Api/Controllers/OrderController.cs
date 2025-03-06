@@ -27,7 +27,7 @@ public class OrderController : ControllerBase
         return Ok(orders);
     }
 
-    // [Authorize(Roles = "Admin, AuthCustomer")]
+    // [Authorize(Roles = "Admin, User")]
     [HttpGet("user/{userId:int}")]
     public async Task<ActionResult<List<Order>>> GetUserOrdersAsync(int userId)
     {
@@ -41,7 +41,7 @@ public class OrderController : ControllerBase
         return Ok(orders);
     }
 
-    // [Authorize(Roles = "Admin, AuthCustomer")]
+    // [Authorize(Roles = "Admin, User")]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<Order>> GetOrderAsync(int id)
     {
@@ -59,7 +59,7 @@ public class OrderController : ControllerBase
         return Ok(order);
     }
 
-    // [Authorize(Roles = "AuthCustomer")]
+    // [Authorize(Roles = "User")]
     [HttpPost]
     public async Task<ActionResult<Order>> PlaceOrderAsync(SBL.Services.Ordering.Models.CreateOrderRequest orderRequest)
     {
@@ -81,7 +81,7 @@ public class OrderController : ControllerBase
         return Ok();
     }
 
-    // [Authorize(Roles = "Admin, AuthCustomer")]
+    // [Authorize(Roles = "Admin, User")]
     [HttpGet("orderItems/{orderId:int}")]
     public async Task<ActionResult<List<OrderItem>>> GetOrderItems(int orderId)
     {
