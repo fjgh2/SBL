@@ -74,6 +74,14 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Moderator", policy => policy.RequireRole("Moderator"));
 });
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Expiration = TimeSpan.FromMinutes(60);
+});
+
 builder.Services.RegisterSessionManagement();
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices();

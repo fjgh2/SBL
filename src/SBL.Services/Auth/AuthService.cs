@@ -1,4 +1,3 @@
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using SBL.Domain.Entities;
 using SBL.Domain.Enums;
@@ -28,16 +27,14 @@ public class AuthService : IAuthService
         _tokenHelper = tokenHelper;
     }
 
-    public async Task<AuthResult> LoginAsync(string accessToken, string email, string name)
+    public async Task<AuthResult> GoogleLoginAsync(string email, string name)
     {
-        // await GoogleJsonWebSignature.ValidateAsync(accessToken);
-        // GoogleJsonWebSignature.Payload payload = await GoogleJsonWebSignature.ValidateAsync(accessToken);
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
             user = new User
             {
-                UserName = email,
+                UserName = name,
                 Email = email,
                 EmailConfirmed = true,
                 SteamId = "",
@@ -95,7 +92,7 @@ public class AuthService : IAuthService
         var token = await _tokenHelper.GenerateToken(user);
         _sessionHelper.SetUserId(user.Id);
         _sessionHelper.SetUserRole(user.Role.ToString());
-
+        
         return new AuthResult()
         {
             Token = token,
@@ -111,6 +108,9 @@ public class AuthService : IAuthService
 
     public async Task RegisterAsync(User user, string password)
     {
+        user.SteamId = "";
+        user.PhoneNumber = "";
+
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {

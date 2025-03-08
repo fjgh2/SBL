@@ -26,12 +26,12 @@ public class AuthController : ControllerBase
     [HttpPost("google-login")]
     public async Task<ActionResult<AuthResult>> GoogleLogin(GoogleLoginRequest request)
     {
-        if (request == null || string.IsNullOrEmpty(request.AccessToken))
+        if (request == null || string.IsNullOrEmpty(request.Email))
         {
             return BadRequest(new ProblemDetails { Title = "Invalid request data" });
         }
 
-        var result = await _authService.LoginAsync(request.AccessToken, request.Email, request.Name);
+        var result = await _authService.GoogleLoginAsync(request.Email, request.Name);
 
         return Ok(result);
     }

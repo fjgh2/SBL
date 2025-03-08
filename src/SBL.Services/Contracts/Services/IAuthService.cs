@@ -5,7 +5,7 @@ namespace SBL.Services.Contracts.Services;
 
 public interface IAuthService
 {
-    Task<AuthResult> LoginAsync(string accessToken, string email, string name);
+    Task<AuthResult> GoogleLoginAsync(string email, string name);
 
     Task<AuthResult> LoginAsync(string email, string password);
 

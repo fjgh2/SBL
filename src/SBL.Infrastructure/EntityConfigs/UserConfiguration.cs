@@ -24,6 +24,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.Role)
             .IsRequired();
 
+        builder.Property(u => u.SteamId)
+            .IsRequired(false);
+
         builder.Property(u => u.CreatedAt)
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
@@ -35,11 +38,11 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasMaxLength(150);
 
         builder.Property(u => u.PhoneNumber)
-            .IsRequired()
+            .IsRequired(false)
             .HasMaxLength(30);
 
         builder.Property(u => u.PasswordHash)
-            .IsRequired()
+            .IsRequired(false)
             .HasMaxLength(200);
 
         builder.Property(u => u.UserName)

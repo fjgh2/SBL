@@ -24,5 +24,4 @@ public static class ContainerConfigExtensions
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.AddAutoMapper(typeof(MappingProfile));
     }
-
 }
