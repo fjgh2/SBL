@@ -10,6 +10,7 @@ using SBL.Api.Middleware;
 using SBL.Domain.Entities;
 using SBL.Infrastructure;
 using SBL.Services;
+using SBL.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -74,15 +75,20 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Moderator", policy => policy.RequireRole("Moderator"));
 });
 
+builder.Services.AddDistributedMemoryCache(); // Re-enable this
 builder.Services.AddSession(options =>
 {
     options.IdleTimeout = TimeSpan.FromMinutes(60);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.Expiration = TimeSpan.FromMinutes(60);
+    options.Cookie.Name = ".MyApp.Session";
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
 });
+builder.Services.AddScoped<SessionHelper>();
+builder.Services.AddHttpContextAccessor();
 
-builder.Services.RegisterSessionManagement();
+// builder.Services.RegisterSessionManagement();
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices();
 builder.Services.RegisterAutomapper();

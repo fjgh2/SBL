@@ -37,7 +37,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<User>> LoginAsync(LoginDto loginDto)
+    public async Task<ActionResult<User>> Login(LoginDto loginDto)
     {
         if (loginDto == null)
         {
@@ -49,17 +49,19 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "User,Moderator,Admin")]
+    // [Authorize(Roles = "User,Moderator,Admin")]
     [HttpPost("logout")]
-    public async Task<ActionResult> LogoutAsync(LogoutDto dto)
+    public async Task<ActionResult> Logout([FromServices] IHttpContextAccessor contextAccessor)
     {
+        var currUser = User.Identity?.Name;
+        var userClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
         await _authService.LogoutAsync();
 
-        return Ok(new { message = "Logged out successfully" });
+        return Ok();
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<int>> RegisterAsync(RegisterDto registerDto)
+    public async Task<ActionResult<int>> Register(RegisterDto registerDto)
     {
         if (registerDto == null)
         {
@@ -70,6 +72,6 @@ public class AuthController : ControllerBase
         user.Role = Role.User;
         await _authService.RegisterAsync(user, registerDto.Password);
 
-        return CreatedAtAction("GetUser", "User", new { id = user.Id }, user.Id);
+        return Ok();
     }
 }

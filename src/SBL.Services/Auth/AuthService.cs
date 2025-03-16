@@ -70,8 +70,10 @@ public class AuthService : IAuthService
 
         return new AuthResult
         {
+            Email = user.Email,
+            UserName = user.UserName,
             Token = token,
-            Role = user.Role
+            Role = Role.User
         };
     }
 
@@ -96,6 +98,8 @@ public class AuthService : IAuthService
         return new AuthResult()
         {
             Token = token,
+            Email = user.Email,
+            UserName = user.UserName,
             Role = user.Role
         };
     }
@@ -110,6 +114,7 @@ public class AuthService : IAuthService
     {
         user.SteamId = "";
         user.PhoneNumber = "";
+        user.UserName = user.Email;
 
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
