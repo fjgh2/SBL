@@ -1,4 +1,3 @@
-using Google.Apis.Auth;
 using Microsoft.AspNetCore.Identity;
 using SBL.Domain.Entities;
 using SBL.Domain.Enums;
@@ -9,11 +8,11 @@ namespace SBL.Services.Auth;
 public class AuthService : IAuthService
 {
     private readonly TokenHelper _tokenHelper;
-    
+
     private readonly SessionHelper _sessionHelper;
-    
+
     private readonly UserManager<User> _userManager;
-    
+
     private readonly SignInManager<User> _signInManager;
 
     public AuthService(
@@ -28,24 +27,30 @@ public class AuthService : IAuthService
         _tokenHelper = tokenHelper;
     }
 
-    public async Task<AuthResponse> LoginAsync(string accessToken, string email, string name)
+    public async Task<AuthResult> GoogleLoginAsync(string email, string name)
     {
-        await GoogleJsonWebSignature.ValidateAsync(accessToken);
-
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
             user = new User
             {
-                UserName = email,
+                UserName = name,
                 Email = email,
                 EmailConfirmed = true,
-                Role = Role.User
+                SteamId = "",
+                PhoneNumber = "",
+                PhoneNumberConfirmed = false,
+                TwoFactorEnabled = false,
+                LockoutEnabled = true,
+                AccessFailedCount = 0,
+                Role = Role.User,
             };
-            var createResult = await _userManager.CreateAsync(user);
+            var pwd = GeneratePassword();
+            var createResult = await _userManager.CreateAsync(user, pwd);
             if (!createResult.Succeeded)
             {
-                throw new Exception($"Failed to create user: {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
+                throw new Exception(
+                    $"Failed to create user: {string.Join(", ", createResult.Errors.Select(e => e.Description))}");
             }
 
             var roleName = user.Role.ToString();
@@ -56,41 +61,45 @@ public class AuthService : IAuthService
                 throw new ArgumentException("No such role");
             }
         }
-        
+
         var token = await _tokenHelper.GenerateToken(user);
         _sessionHelper.SetUserId(user.Id);
         _sessionHelper.SetUserRole(user.Role.ToString());
 
         await _signInManager.SignInAsync(user, isPersistent: false);
 
-        return new AuthResponse
+        return new AuthResult
         {
+            Email = user.Email,
+            UserName = user.UserName,
             Token = token,
-            Role = user.Role
+            Role = Role.User
         };
     }
 
-    public async Task<AuthResponse> LoginAsync(string email, string password)
+    public async Task<AuthResult> LoginAsync(string email, string password)
     {
         var user = await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
             throw new InvalidOperationException("User not found");
         }
-        
+
         var signInResult = await _signInManager.PasswordSignInAsync(user, password, false, true);
         if (!signInResult.Succeeded)
         {
             throw new InvalidOperationException("Invalid login attempt");
         }
-        
+
         var token = await _tokenHelper.GenerateToken(user);
         _sessionHelper.SetUserId(user.Id);
         _sessionHelper.SetUserRole(user.Role.ToString());
-
-        return new AuthResponse()
+        
+        return new AuthResult()
         {
             Token = token,
+            Email = user.Email,
+            UserName = user.UserName,
             Role = user.Role
         };
     }
@@ -103,16 +112,31 @@ public class AuthService : IAuthService
 
     public async Task RegisterAsync(User user, string password)
     {
+        user.SteamId = "";
+        user.PhoneNumber = "";
+        user.UserName = user.Email;
+
         var result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {
             throw new Exception();
         }
-        
+
         var roleResult = await _userManager.AddToRoleAsync(user, user.Role.ToString());
         if (!roleResult.Succeeded)
         {
-            throw new Exception($"Failed to assign role: {string.Join(", ", roleResult.Errors.Select(e => e.Description))}");
+            throw new Exception(
+                $"Failed to assign role: {string.Join(", ", 
+                    roleResult.Errors.Select(e => e.Description))}");
         }
+    }
+
+    private string GeneratePassword()
+    {
+        const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        var random = new Random();
+
+        return new string(Enumerable.Repeat(chars, 16)
+            .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 }

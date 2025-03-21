@@ -7,9 +7,10 @@ public class News
     public string Title { get; set; }
 
     public string Text { get; set; }
-
-    // pictures if needed
-    // if used in achievements, make it an entity
+    
+    public string Picture { get; set; }
+    
+    // int just to set up db
     public int Vote { get; set; }
 
     public DateTime CreatedAt { get; set; }

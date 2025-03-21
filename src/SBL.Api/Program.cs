@@ -10,6 +10,7 @@ using SBL.Api.Middleware;
 using SBL.Domain.Entities;
 using SBL.Infrastructure;
 using SBL.Services;
+using SBL.Services.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -70,11 +71,24 @@ builder.Services
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("AuthCustomer", policy => policy.RequireRole("AuthCustomer"));
+    options.AddPolicy("User", policy => policy.RequireRole("User"));
     options.AddPolicy("Moderator", policy => policy.RequireRole("Moderator"));
 });
 
-builder.Services.RegisterSessionManagement();
+builder.Services.AddDistributedMemoryCache(); // Re-enable this
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(60);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.Name = ".MyApp.Session";
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+builder.Services.AddScoped<SessionHelper>();
+builder.Services.AddHttpContextAccessor();
+
+// builder.Services.RegisterSessionManagement();
 builder.Services.RegisterRepositories();
 builder.Services.RegisterServices();
 builder.Services.RegisterAutomapper();
@@ -88,21 +102,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseMiddleware<ExceptionHandlerMiddleware>();
+// app.UseMiddleware<ExceptionHandlerMiddleware>();
 
-// Initialize database on its creation
-// using var scope = app.Services.CreateScope();
-// var services = scope.ServiceProvider;
-// var roleManager = services.GetRequiredService<RoleManager<IdentityRole<int>>>();
-// try
-// {
-//     await DataSeeder.SeedAsync(services);
-//     await DataSeeder.SeedRolesAsync(roleManager);
-// }
-// catch (Exception ex)
-// {
-//     Debug.WriteLine(ex.Message, ex.StackTrace);
-// }
+using var scope = app.Services.CreateScope();
+var services = scope.ServiceProvider;
+try
+{
+    await DataSeeder.SeedAsync(services);
+}
+catch (Exception ex)
+{
+    Debug.WriteLine(ex.Message + "\n" + ex.StackTrace);
+}
 
 app.UseStaticFiles(new StaticFileOptions
 {
@@ -111,6 +122,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/static"
 });
 app.UseCors("AllowAllOrigins");
+app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

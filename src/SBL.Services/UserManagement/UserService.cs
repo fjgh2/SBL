@@ -44,7 +44,9 @@ public class UserService : IUserService
             var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
             if (!removeResult.Succeeded)
             {
-                throw new Exception($"Failed to remove existing roles: {string.Join(", ", removeResult.Errors.Select(e => e.Description))}");
+                throw new Exception(
+                    $"Failed to remove existing roles: {
+                        string.Join(", ", removeResult.Errors.Select(e => e.Description))}");
             }
         }
         // Update user's Role property
@@ -52,7 +54,8 @@ public class UserService : IUserService
         var updateResult = await _userManager.UpdateAsync(user);
         if (!updateResult.Succeeded)
         {
-            throw new Exception($"Update failed: {string.Join(", ", updateResult.Errors.Select(e => e.Description))}");
+            throw new Exception($"Update failed: {
+                string.Join(", ", updateResult.Errors.Select(e => e.Description))}");
         }
 
         // Ensure the new role exists
@@ -66,7 +69,8 @@ public class UserService : IUserService
         var addResult = await _userManager.AddToRoleAsync(user, newRoleName);
         if (!addResult.Succeeded)
         {
-            throw new Exception($"Failed to add new role: {string.Join(", ", addResult.Errors.Select(e => e.Description))}");
+            throw new Exception($"Failed to add new role: {
+                string.Join(", ", addResult.Errors.Select(e => e.Description))}");
         }
     }
 
@@ -88,7 +92,8 @@ public class UserService : IUserService
             var result = await _userManager.DeleteAsync(user);
             if (!result.Succeeded)
             {
-                throw new Exception($"Update failed: {result.Errors.Select(e => e.Description)}");
+                throw new Exception($"Update failed: {
+                    result.Errors.Select(e => e.Description)}");
             }
         }
     }

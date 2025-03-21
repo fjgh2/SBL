@@ -22,7 +22,7 @@ public class BasketController : ControllerBase
         _mapper = mapper;
     }
     
-    // [Authorize(Roles = "AuthCustomer")]
+    // [Authorize(Roles = "User")]
     [HttpGet("{userId:int}")]
     public async Task<ActionResult<List<BasketItem>>> GetBasketAsync(int userId)
     {
@@ -36,7 +36,7 @@ public class BasketController : ControllerBase
         return Ok(basket.ToArray());
     }
 
-    // [Authorize(Roles = "AuthCustomer")]
+    // [Authorize(Roles = "User")]
     [HttpPost]
     public async Task<ActionResult<BasketItem>> AddToBasketAsync(CreateBasketItemDto basketItemDto)
     {
@@ -52,7 +52,7 @@ public class BasketController : ControllerBase
             new { BasketItemId = basketItemId }, basketItem);
     }
     
-    // [Authorize(Roles = "AuthCustomer")]
+    // [Authorize(Roles = "User")]
     [HttpPut("quantity")]
     public async Task<ActionResult> UpdateQuantityAsync(UpdateQuantityDto updateQuantityDto)
     {
@@ -67,7 +67,7 @@ public class BasketController : ControllerBase
         return NoContent();
     }
 
-    // [Authorize(Roles = "AuthCustomer")]
+    // [Authorize(Roles = "User")]
     [HttpDelete("{basketItemId:int}")]
     public async Task<ActionResult> DeleteBasketItemAsync(int basketItemId)
     {

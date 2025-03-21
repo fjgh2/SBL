@@ -8,16 +8,21 @@ public class User : IdentityUser<int>
 {
     public Role Role { get; set; }
     
+    public string SteamId { get; set; }
+    
     public DateTime CreatedAt { get; set; }
     
     public DateTime UpdatedAt { get; set; }
     
-    [JsonIgnore]
-    public ICollection<Order> Orders { get; set; } = new List<Order>();
-    
-    [JsonIgnore]
-    public ICollection<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
-
-    [JsonIgnore] 
-    public ICollection<UserAchievement> UserAchievements { get; set; } = new List<UserAchievement>();
+    // [JsonIgnore]
+    // public ICollection<Order> Orders { get; set; } = new List<Order>();
+    //
+    // [JsonIgnore]
+    // public ICollection<BasketItem> BasketItems { get; set; } = new List<BasketItem>();
+    //
+    // [JsonIgnore]
+    // public ICollection<UserAchievement> UserAchievements { get; set; } = new List<UserAchievement>();
+    //
+    // [JsonIgnore]
+    // public ICollection<Vote> Votes { get; set; } = new List<Vote>();
 }

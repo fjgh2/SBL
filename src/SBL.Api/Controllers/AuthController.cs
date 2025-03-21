@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SBL.Api.Dtos;
 using SBL.Domain.Entities;
 using SBL.Domain.Enums;
 using SBL.Services.Auth;
@@ -23,21 +24,20 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("google-login")]
-    public async Task<ActionResult<AuthResponse>> GoogleLogin(GoogleLoginRequest request)
+    public async Task<ActionResult<AuthResult>> GoogleLogin(GoogleLoginRequest request)
     {
-        if (request == null || string.IsNullOrEmpty(request.AccessToken) || 
-            string.IsNullOrEmpty(request.Email) || string.IsNullOrEmpty(request.Name))
+        if (request == null || string.IsNullOrEmpty(request.Email))
         {
             return BadRequest(new ProblemDetails { Title = "Invalid request data" });
         }
 
-        var result = await _authService.LoginAsync(request.AccessToken, request.Email, request.Name);
-        
+        var result = await _authService.GoogleLoginAsync(request.Email, request.Name);
+
         return Ok(result);
     }
 
     [HttpPost("login")]
-    public async Task<ActionResult<User>> LoginAsync(LoginDto loginDto)
+    public async Task<ActionResult<User>> Login(LoginDto loginDto)
     {
         if (loginDto == null)
         {
@@ -49,17 +49,19 @@ public class AuthController : ControllerBase
         return Ok(result);
     }
 
-    [Authorize(Roles = "AuthCustomer,Admin")]
+    // [Authorize(Roles = "User,Moderator,Admin")]
     [HttpPost("logout")]
-    public async Task<ActionResult> LogoutAsync(LogoutDto dto)
+    public async Task<ActionResult> Logout([FromServices] IHttpContextAccessor contextAccessor)
     {
+        var currUser = User.Identity?.Name;
+        var userClaims = User.Claims.Select(c => new { c.Type, c.Value }).ToList();
         await _authService.LogoutAsync();
-        
-        return Ok(new { message = "Logged out successfully" });
+
+        return Ok();
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<int>> RegisterAsync(RegisterDto registerDto)
+    public async Task<ActionResult<int>> Register(RegisterDto registerDto)
     {
         if (registerDto == null)
         {
@@ -70,6 +72,6 @@ public class AuthController : ControllerBase
         user.Role = Role.User;
         await _authService.RegisterAsync(user, registerDto.Password);
 
-        return CreatedAtAction("GetUser", "User", new { id = user.Id }, user.Id);
+        return Ok();
     }
 }
